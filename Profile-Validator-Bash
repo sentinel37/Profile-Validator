@@ -1,0 +1,25 @@
+#!/bin/bash
+
+acctNumber=$1
+
+if grep $acctNumber test.txt > /dev/null
+then
+   echo "Profile Already Exist"
+
+   var=$(cat test.txt | grep -wB 1 "$1" |  sed -e 's/\[profiles\(.*\)]/\1/' |grep -v "role_arn" | awk '{print substr($2, 1, length($2)-1)}')
+   
+   echo "$var"
+   
+else
+   echo "
+
+[profile $acctNumber]
+role_arn = arn:aws:iam::$acctNumber:role/ccs-pwc-vpc-builds-role
+credential_source = Ec2InstanceMetadata" >> "/Users/thebeast/Downloads/test.txt"
+
+   echo "Profile has been created"
+   
+   var=$(cat test.txt | grep -wB 1 "$1" |  sed -e 's/\[profiles\(.*\)]/\1/' |grep -v "role_arn" | awk '{print substr($2, 1, length($2)-1)}')
+   
+   echo "$var"
+fi 
